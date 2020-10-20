@@ -1,0 +1,53 @@
+#include <iostream>
+#include <string>
+
+#include "glad/glad.h"
+#include "glfw/glfw3.h"
+
+#include "display.h"
+#include "rendering.h"
+
+/*
+  
+  Map of program:
+
+  -- Display
+  -- Input callbacks
+  -- Rendering (2d game, will only have one mesh, a square)
+  -- entities in a scene
+  -- Input affects entities in scene
+  -- UI components
+  -- Gameplay loop / logic.
+
+ */
+
+int main(int argc, char* argv[])
+{
+  gameWindow win(1280, 720, 0, false, "Project");
+  win.open();
+  win.loadGL();
+
+  render_manager renderer;
+  renderer.setup_backend();
+  
+  while(!glfwWindowShouldClose(win.handle))
+    {
+      // Ambient & background
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+      // Rendering and UI
+      renderer.render_center_square();
+      
+      // Input
+      if(glfwGetKey(win.handle, GLFW_KEY_ESCAPE) && glfwGetKey(win.handle, GLFW_KEY_BACKSPACE))
+	{ glfwSetWindowShouldClose(win.handle, true); }
+
+      // Cleanup and/or glfw.
+      glfwSwapBuffers(win.handle);
+      glfwPollEvents();
+    }
+
+  glfwTerminate();
+  return 0;
+}

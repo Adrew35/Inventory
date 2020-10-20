@@ -1,0 +1,98 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+
+#include "glad/glad.h"
+
+#include "shader.h"
+
+shader_program::shader_program()
+{}
+
+shader_program::~shader_program()
+{}
+
+int shader_program::create_from_path(const std::string& path, int shader_type)
+{
+  std::string vertPath = "v_" + path + ".glsl";
+  std::string fragPath = "f_" + path + ".glsl";
+  std::fstream vertFile(vertPath);
+  std::fstream fragFile(fragPath);
+  
+  if(!vertFile)
+    {
+      std::cout << "[ERR] : Failed to load vertex shader file." << std::endl;
+      return -1;
+    }
+  if(!fragFile)
+    {
+      std::cout << "[ERR] : Failed to load fragment shader file." << std::endl;
+      return -1;
+    }
+
+  vert.handle = glCreateShader(GL_VERTEX_SHADER);
+  frag.handle = glCreateShader(GL_FRAGMENT_SHADER);
+
+  const char* source;
+  std::string newSource;
+  std::stringstream raw_source;
+  vertFile >> raw_source.rdbuf();
+  newSource = { raw_source.str() };
+  source = newSource.c_str();
+  vert.source_code = source;
+
+  glShaderSource(vert.handle, 1, &source, 0);
+  glCompileShader(vert.handle);
+
+  int comp;
+  glGetShaderiv(vert.handle, GL_COMPILE_STATUS, &comp);
+  if (comp == GL_FALSE)
+    {
+      int maxLength = 0;
+      glGetShaderiv(vert.handle, GL_INFO_LOG_LENGTH, &maxLength);
+      
+      std::vector<char> errorLog(maxLength);
+      glGetShaderInfoLog(vert.handle, maxLength, &maxLength, &errorLog[0]);
+      
+      std::cout << &errorLog[0] << std::endl;
+      
+      glDeleteShader(vert.handle);
+      return -1;
+    }
+
+  fragFile >> raw_source.rdbuf();
+  newSource = { raw_source.str() };
+  source = newSource.c_str();
+  frag.source_code = source;
+
+  glShaderSource(frag.handle, 1, &source, 0);
+  glCompileShader(frag.handle);
+
+  glGetShaderiv(frag.handle, GL_COMPILE_STATUS, &comp);
+  if (comp == GL_FALSE)
+    {
+      int maxLength = 0;
+      glGetShaderiv(frag.handle, GL_INFO_LOG_LENGTH, &maxLength);
+      
+      std::vector<char> errorLog(maxLength);
+      glGetShaderInfoLog(frag.handle, maxLength, &maxLength, &errorLog[0]);
+      
+      std::cout << &errorLog[0] << std::endl;
+      
+      glDeleteShader(frag.handle);
+      return -1;
+    }
+
+  program_id = glCreateProgram();
+  glAttachShader(program_id, vert.handle);
+  glAttachShader(program_id, frag.handle);
+  glLinkProgram(program_id);
+  glDetachShader(program_id, vert.handle);
+  glDetachShader(program_id, frag.handle);
+  glDeleteShader(vert.handle);
+  glDeleteShader(frag.handle);
+  
+  return 0;
+}
