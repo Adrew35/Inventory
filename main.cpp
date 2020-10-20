@@ -24,6 +24,23 @@ static bool debug = false;
 
  */
 
+/*
+TODO:: Rewrite shader system.
+
+A ShaderProgram is a class that has two 'uint32_t's as handles (vert & frag),
+and another as a 'program_id'. When you create a shader program, you pass
+it the paths to the vertex and fragment shaders separately.
+These are read and compiled into the vertex and fragment shaders.
+The 'program_id' is linked after attaching the shaders, and deleting them afterwards.
+During the render loop, for every entity in the scene (which will have a grouped shader 
+that more that one entity uses at once), that entities variables are set as uniforms
+in the program, and the program is 'glUseProgram'ed.
+
+After the rendering for everything in that shader is done, reset to no program being used, and continue with the game logic.
+
+All this will aim to be done on October 21st. I am too tired, and frustrated.
+ */
+
 void parse_commands(int count, char* args[])
 {
   std::string command;
