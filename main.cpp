@@ -54,14 +54,33 @@ int main(int argc, char* argv[])
   renderer.setup_backend();
 
   shader_program flatShader;
-  flatShader.bind();
   flatShader.create_from_file("flatshade");
 
-  float pos[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-  float color[4] = { 0.2f, 0.5f, 0.1f, 1.0f };
-  flatShader.set_uniform4fv("_vPos", pos);
-  flatShader.set_uniform4fv("_pixelColor", color); 
-  
+  std::string uniform_name = "test";
+  int location = glGetUniformLocation(flatShader.program_id, uniform_name.c_str());
+  glUniform1f(location, 4);
+
+  std::string uniform_positionName = "position";
+  std::string uniform_pixelColorName = "_pixelColor";
+  std::string testName = "test";
+  int pixelLocation = glGetUniformLocation(flatShader.program_id, uniform_pixelColorName.c_str());
+  int positionLocation = glGetUniformLocation(flatShader.program_id, uniform_positionName.c_str());
+  int testLocation = glGetUniformLocation(flatShader.program_id, testName.c_str());
+  if(testLocation < 0)
+    { std::cout << "Test returned negative." << std::endl; return -1; }
+
+  if(pixelLocation < 0)
+    { std::cout << "PixelColor return negative." << std::endl; return -1; }
+  if(positionLocation < 0)
+    { std::cout << "Position returned negative." << std::endl; return -1; }
+
+  float pixelColour[4] = { 0.2f, 0.1f, 0.5f, 1.0f };
+  float position[4]    = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+  glUniform4fv(pixelLocation, 1, pixelColour);
+  glUniform4fv(positionLocation, 1, position);
+
+  flatShader.bind();
   while(!glfwWindowShouldClose(win.handle))
     {
       // Ambient & background

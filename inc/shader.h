@@ -36,6 +36,8 @@ class shader_program
   int get_uniform_location(const std::string& _name);
   void set_uniform3fv(const std::string& _name, float values[3]);
   void set_uniform4fv(const std::string& _name, float values[4]);
+
+  void set_uniform1f(const std::string& _name, float value);
   
   uint32_t program_id;
   

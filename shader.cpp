@@ -107,8 +107,10 @@ void shader_program::bind()
 void shader_program::unbind()
 { glUseProgram(0); }
 
+// TODO: Not able to find unifor "_vPos" in vertex shader.
 int shader_program::get_uniform_location(const std::string& _name)
 {
+  std::cout << "[Update] : Searching for uniform <" << _name.c_str() << ">\n";
   int location = glGetUniformLocation(program_id, _name.c_str());
   if(location < 0)
     {
@@ -130,4 +132,10 @@ void shader_program::set_uniform4fv(const std::string& _name, float values[4])
 {
   int location = get_uniform_location(_name);
   glUniform4fv(location, 1, values);
+}
+
+void shader_program::set_uniform1f(const std::string& _name, float value)
+{
+  int location = get_uniform_location(_name);
+  glUniform1f(location, value);
 }
