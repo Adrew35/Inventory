@@ -36,7 +36,57 @@ bool new_shader_program::compile(const std::string& name)
   vertFile >> rawSource.rdbuf();
   sourceBuffer = {rawSource.str()};
   source = sourceBuffer.c_str();
+
+  glShaderSource(1, vert, &source, 0);
+  glCompileShader(vert);
+
+  int comp;
+  glGetShaderiv(vert, GL_COMPILE_STATUS, &comp);
+  if (comp == GL_FALSE)
+    {
+      std::cout << "[Compile Error] : Vertex Shader." << std::endl;
+      int maxLength = 0;
+      glGetShaderiv(vert, GL_INFO_LOG_LENGTH, &maxLength);
+      
+      std::vector<char> errorLog(maxLength);
+      glGetShaderInfoLog(vert, maxLength, &maxLength, &errorLog[0]);
+      
+      std::cout << &errorLog[0] << std::endl;
+      
+      glDeleteShader(vert);
+      return false;
+    }
+
+  rawSource = std::stringstream();
+  source = "";
+  fragFile >> rawSource.rdbuf();
+  sourceBuffer = {rawSource.str()};
+  source = sourceBuffer.c_str();
+
+  glShaderSource(1, frag, &source, 0);
+  glCompileShader(frag);
+
+  glGetShaderiv(frag, GL_COMPILE_STATUS, &comp);
+  if (comp == GL_FALSE)
+    {
+      std::cout << "[Compile Error] : Fragment Shader." << std::endl;
+      int maxLength = 0;
+      glGetShaderiv(frag, GL_INFO_LOG_LENGTH, &maxLength);
+      
+      std::vector<char> errorLog(maxLength);
+      glGetShaderInfoLog(frag, maxLength, &maxLength, &errorLog[0]);
+      
+      std::cout << &errorLog[0] << std::endl;
+      
+      glDeleteShader(frag);
+      return -1;
+    }
+
+  glAttachShader(program_id, vert); glAttachShader(program_id, frag);
+  glLinkProgram(program_id);
+  glDeleteShader(vert); glDeleteShader(frag);
   
+  return true;
 }
 
 void new_shader_program::dump_source()
