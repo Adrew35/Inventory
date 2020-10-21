@@ -8,6 +8,43 @@
 
 #include "shader.h"
 
+new_shader_program::new_shader_program()
+{
+  program_id = glCreateProgram();
+  vert = glCreateShader(GL_VERTEX_SHADER);
+  frag = glCreateShader(GL_FRAGMENT_SHADER);
+}
+
+new_shader_program::~new_shader_program()
+{}
+
+bool new_shader_program::compile(const std::string& name)
+{
+  std::string vertFilePath = "v_" + name + ".glsl";
+  std::string fragFilePath = "f_" + name + ".glsl";
+  std::fstream vertFile(vertFilePath);
+  std::fstream fragFile(fragFilePath);
+
+  if(!vertFile)
+    { std::cout << "[ERR] : Failed to open vertex shader." << std::endl; return false; }
+  if(!fragFile)
+    { std::cout << "[ERR] : failed to open fragment shader." << std::endl; return false; }
+
+  std::stringstream rawSource;
+  const char* source;
+  std::string sourceBuffer;
+  vertFile >> rawSource.rdbuf();
+  sourceBuffer = {rawSource.str()};
+  source = sourceBuffer.c_str();
+  
+}
+
+void new_shader_program::dump_source()
+{
+  std::cout << "V_Shader Code:\n" << source[0];
+  std::cout << "F_Shader Code:\n" << source[1];
+}
+
 shader_program::shader_program()
 { program_id = glCreateProgram(); }
 

@@ -11,6 +11,20 @@
 
 #include "glad/glad.h"
 
+class new_shader_program
+{
+public:
+  new_shader_program();  // Calls gl creation for program and shaders.
+  ~new_shader_program();
+
+  bool compile(const std::string& name);
+  void dump_source();
+  
+private:
+  std::string source[2];
+  int program_id, vert, frag;
+};
+
 struct shader_handle
 {
   shader_handle()
