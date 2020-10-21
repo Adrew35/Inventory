@@ -6,7 +6,6 @@
 
 #include "display.h"
 #include "rendering.h"
-#include "shader.h"
 
 static bool debug = false;
 
@@ -27,7 +26,7 @@ static bool debug = false;
 /*
 TODO:: Rewrite shader system.
 
-A ShaderProgram is a class that has two 'uint32_t's as handles (vert & frag),
+A ShaderProgram is a class that has two 'int's as handles (vert & frag),
 and another as a 'program_id'. When you create a shader program, you pass
 it the paths to the vertex and fragment shaders separately.
 These are read and compiled into the vertex and fragment shaders.
@@ -70,49 +69,32 @@ int main(int argc, char* argv[])
   render_manager renderer;
   renderer.setup_backend();
 
-  shader_program flatShader;
-  flatShader.create_from_file("flatshade");
+  new_shader_program flatshader;
+  flatshader.compile("flatshade");
+  glUseProgram(flatshader.get_id());
 
-  std::string uniform_name = "test";
-  int location = glGetUniformLocation(flatShader.program_id, uniform_name.c_str());
-  glUniform1f(location, 4);
-
-  std::string uniform_positionName = "position";
-  std::string uniform_pixelColorName = "_pixelColor";
-  std::string testName = "test";
-  int pixelLocation = glGetUniformLocation(flatShader.program_id, uniform_pixelColorName.c_str());
-  int positionLocation = glGetUniformLocation(flatShader.program_id, uniform_positionName.c_str());
-  int testLocation = glGetUniformLocation(flatShader.program_id, testName.c_str());
-  if(testLocation < 0)
-    { std::cout << "Test returned negative." << std::endl; return -1; }
-
-  if(pixelLocation < 0)
-    { std::cout << "PixelColor return negative." << std::endl; return -1; }
-  if(positionLocation < 0)
-    { std::cout << "Position returned negative." << std::endl; return -1; }
-
-  float pixelColour[4] = { 0.2f, 0.1f, 0.5f, 1.0f };
-  float position[4]    = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-  glUniform4fv(pixelLocation, 1, pixelColour);
-  glUniform4fv(positionLocation, 1, position);
-
-  flatShader.bind();
+  float position[3] = {0.0f, 0.0f, 0.0f};
+  flatshader.set_uniform_1f(flatshader.get_id(), "testValue", 4);
+  flatshader.set_uniform_4fv(flatshader.get_id(), "position", position);
+  
   while(!glfwWindowShouldClose(win.handle))
     {
       // Ambient & background
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-      flatShader.bind();
+      //TODO: Add this line to render loop.
+      flatshader.bind();
+      
       // Rendering and UI
       renderer.render_center_square();
       
+      glUseProgram(0);
+
       // Input
       if(glfwGetKey(win.handle, GLFW_KEY_ESCAPE) && glfwGetKey(win.handle, GLFW_KEY_BACKSPACE))
 	{ glfwSetWindowShouldClose(win.handle, true); }
 
-      flatShader.unbind();
       // Cleanup and/or glfw.
       glfwSwapBuffers(win.handle);
       glfwPollEvents();
