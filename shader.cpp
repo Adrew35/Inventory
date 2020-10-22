@@ -13,6 +13,10 @@ new_shader_program::new_shader_program()
   program_id = glCreateProgram();
   vert = glCreateShader(GL_VERTEX_SHADER);
   frag = glCreateShader(GL_FRAGMENT_SHADER);
+
+  std::cout << "Created Program: (handle)" << program_id << std::endl;
+  std::cout << "Created Shader: (handle)" << vert << std::endl;
+  std::cout << "Created Shader: (handle)" << frag << std::endl << std::endl;
 }
 
 new_shader_program::~new_shader_program()

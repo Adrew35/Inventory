@@ -26,26 +26,26 @@ public:
   int get_id()
   { return program_id; }
 
-  int get_uniform_location(int program_id, const std::string& _name)
+  int get_uniform_location(const std::string& _name)
   {
     int location = glGetUniformLocation(program_id, _name.c_str());
-    if(location < 0)
+    if(location == -1)
       {
-	std::cout << "[ERR] : Failed to locate uniform <" << _name << ">\n";
+	std::cout << "[ERR] : Uniform <" << _name << "> found at position " << location << ".\n";
 	return -1;
       }
     return location;
   }
 
-  void set_uniform_1f(int program_id, const std::string& _name, float value)
+  void set_uniform_1f(const std::string& _name, float value)
   {
-    int location = get_uniform_location(program_id, _name);
+    int location = get_uniform_location(_name);
     glUniform1f(location, value);
   }
   
-  void set_uniform_4fv(int program_id, const std::string& _name, float value[4])
+  void set_uniform_4fv(const std::string& _name, float value[4])
   {
-    int location = get_uniform_location(program_id, _name);
+    int location = get_uniform_location(_name);
     glUniform4fv(location, 1, value);
   }
   

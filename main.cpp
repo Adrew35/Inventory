@@ -71,11 +71,13 @@ int main(int argc, char* argv[])
 
   new_shader_program flatshader;
   flatshader.compile("flatshade");
-  glUseProgram(flatshader.get_id());
+  glLinkProgram(flatshader.get_id());
 
   float position[3] = {0.0f, 0.0f, 0.0f};
-  flatshader.set_uniform_1f(flatshader.get_id(), "testValue", 4);
-  flatshader.set_uniform_4fv(flatshader.get_id(), "position", position);
+  float rgba[4]     = {0.5f, 0.2f, 0.7f, 1.0f};
+  flatshader.set_uniform_1f("testValue", 4);
+  flatshader.set_uniform_3fv("position", position);
+  flatshader.set_uniform_4fv("pixelColor", rgba);
   
   while(!glfwWindowShouldClose(win.handle))
     {
